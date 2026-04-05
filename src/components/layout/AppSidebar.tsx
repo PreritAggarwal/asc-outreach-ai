@@ -1,16 +1,25 @@
-import { LayoutDashboard, Upload, Inbox, BarChart2, Settings } from "lucide-react";
+import { LayoutDashboard, Upload, Inbox, BarChart2, Settings, LogOut } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
+import { useAuth } from "@/lib/auth";
+import { useDashboardMetrics } from "@/hooks/useApi";
 
 const navItems = [
   { title: "Dashboard", path: "/", icon: LayoutDashboard },
   { title: "Upload Leads", path: "/upload", icon: Upload },
-  { title: "Review Queue", path: "/review", icon: Inbox, badge: 47 },
+  { title: "Review Queue", path: "/review", icon: Inbox, badge: true },
   { title: "Campaigns", path: "/campaigns", icon: BarChart2 },
   { title: "Settings", path: "/settings", icon: Settings },
 ];
 
 export default function AppSidebar() {
   const location = useLocation();
+  const { user, logout } = useAuth();
+  const { data: metrics } = useDashboardMetrics();
+
+  const queueCount = metrics?.leadsInQueue ?? 0;
+  const initials = user?.name
+    ? user.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
+    : '??';
 
   return (
     <aside className="w-60 shrink-0 h-screen sticky top-0 flex flex-col border-r"
@@ -39,8 +48,8 @@ export default function AppSidebar() {
             >
               <item.icon className={`w-5 h-5 ${active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"} transition-colors`} />
               <span className="flex-1">{item.title}</span>
-              {item.badge && (
-                <span className="badge-count">{item.badge}</span>
+              {item.badge && queueCount > 0 && (
+                <span className="badge-count">{queueCount}</span>
               )}
             </NavLink>
           );
@@ -51,12 +60,15 @@ export default function AppSidebar() {
       <div className="px-4 py-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center text-primary text-sm font-semibold">
-            JC
+            {initials}
           </div>
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">James Carter</p>
-            <p className="text-xs text-muted-foreground">CEO</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground truncate">{user?.name || 'User'}</p>
+            <p className="text-xs text-muted-foreground truncate">{user?.email || ''}</p>
           </div>
+          <button onClick={logout} className="text-muted-foreground hover:text-foreground transition-colors" title="Logout">
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </aside>
