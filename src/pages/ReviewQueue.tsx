@@ -7,7 +7,7 @@ import {
 } from "@/hooks/useApi";
 import type { LeadStatus } from "@/lib/types";
 
-type FilterStatus = "All" | "PENDING" | "APPROVED" | "SKIPPED" | "HUMAN_REVIEW";
+type FilterStatus = "All" | "PENDING" | "APPROVED" | "SKIPPED" | "HUMAN_REVIEW" | "FAILED";
 
 export default function ReviewQueue() {
   const [searchParams] = useSearchParams();
@@ -56,8 +56,9 @@ export default function ReviewQueue() {
     [leads]
   );
 
+  // Only HUMAN_REVIEW leads need human action — mid-pipeline states are not actionable
   const pendingCount = useMemo(() =>
-    leads.filter((l) => ['PENDING', 'HUMAN_REVIEW', 'QUALIFIED', 'CRITIC_REVIEW'].includes(l.status)).length,
+    leads.filter((l) => l.status === 'HUMAN_REVIEW').length,
     [leads]
   );
 
@@ -79,25 +80,47 @@ export default function ReviewQueue() {
   };
 
   const handleBulkApprove = async () => {
-    const pendingIds = leads.filter((l) => ['QUALIFIED', 'HUMAN_REVIEW', 'CRITIC_REVIEW'].includes(l.status)).map((l) => l.id);
-    if (pendingIds.length > 0) {
-      await bulkApproveMut.mutateAsync(pendingIds);
+    // Only approve HUMAN_REVIEW leads — the backend enforces this but align FE too
+    const reviewIds = leads.filter((l) => l.status === 'HUMAN_REVIEW').map((l) => l.id);
+    if (reviewIds.length > 0) {
+      await bulkApproveMut.mutateAsync(reviewIds);
     }
   };
 
   const handleSendApproved = async () => {
-    if (campaignId) {
-      await sendApprovedMut.mutateAsync(campaignId);
-    }
+    if (!campaignId) return;
+    if (!window.confirm(`Send emails to all ${approvedCount} approved lead(s)? This will trigger real outbound emails via Smartlead.`)) return;
+    await sendApprovedMut.mutateAsync(campaignId);
   };
 
   const scoreClass = (s: number | null) => (s && s >= 8 ? "quality-high" : "quality-mid");
+
+  // Score badge: shows AI quality score with colour coding
+  const scoreBadge = (score: number | null) => {
+    if (score == null) return null;
+    if (score >= 8) return (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-green-500/15 text-green-400">
+        ✦ {score}/10
+      </span>
+    );
+    if (score >= 6) return (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-500/15 text-yellow-400">
+        {score}/10
+      </span>
+    );
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400">
+        {score}/10
+      </span>
+    );
+  };
 
   const statusPill = (s: LeadStatus) => {
     if (s === "APPROVED") return <span className="status-approved">✅ Approved</span>;
     if (s === "SKIPPED") return <span className="status-skipped">Skipped</span>;
     if (s === "SENT") return <span className="status-complete">Sent</span>;
     if (s === "HUMAN_REVIEW") return <span className="status-processing">🟡 Review</span>;
+    if (s === "FAILED") return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400">✕ Failed</span>;
     return <span className="status-pending">Pending</span>;
   };
 
@@ -105,16 +128,17 @@ export default function ReviewQueue() {
     if (s === "APPROVED" || s === "SENT") return "#22c55e";
     if (s === "SKIPPED" || s === "DISCARDED") return "#6B7280";
     if (s === "HUMAN_REVIEW") return "#F59E0B";
+    if (s === "FAILED") return "#ef4444";
     return "#7C3AED";
   };
 
-  const filters: FilterStatus[] = ["All", "PENDING", "APPROVED", "SKIPPED", "HUMAN_REVIEW"];
-  const filterLabels: Record<FilterStatus, string> = { All: "All", PENDING: "Pending", APPROVED: "Approved", SKIPPED: "Skipped", HUMAN_REVIEW: "Review" };
+  const filters: FilterStatus[] = ["All", "HUMAN_REVIEW", "APPROVED", "FAILED", "SKIPPED", "PENDING"];
+  const filterLabels: Record<FilterStatus, string> = { All: "All", PENDING: "Pending", APPROVED: "Approved", SKIPPED: "Skipped", HUMAN_REVIEW: "Review", FAILED: "Failed" };
 
   return (
-    <div className="flex h-screen">
-      {/* LEFT PANEL */}
-      <div className="w-[380px] shrink-0 border-r flex flex-col" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+    <div className="flex" style={{ height: '100%', minHeight: '100vh' }}>
+      {/* LEFT PANEL — sticky, does not scroll with page */}
+      <div className="w-[380px] shrink-0 border-r flex flex-col sticky top-0 h-screen" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
         <div className="p-4 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
           {/* Campaign selector */}
           <select value={campaignId} onChange={(e) => { setCampaignId(e.target.value); setPage(1); setSelectedId(''); }}
@@ -127,13 +151,15 @@ export default function ReviewQueue() {
 
           <div className="flex items-center gap-3 mb-3">
             <h2 className="text-foreground font-bold text-lg">Review Queue</h2>
-            <span className="badge-count">{pendingCount} pending</span>
+            {pendingCount > 0 && (
+              <span className="badge-count">{pendingCount} need review</span>
+            )}
           </div>
           <div className="flex gap-2">
-            <button onClick={handleBulkApprove} disabled={bulkApproveMut.isPending}
+            <button onClick={handleBulkApprove} disabled={bulkApproveMut.isPending || pendingCount === 0}
               className="flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-all duration-200 hover:bg-secondary/50 disabled:opacity-50"
               style={{ borderColor: "rgba(255,255,255,0.1)", color: "hsl(0 0% 95%)" }}>
-              {bulkApproveMut.isPending ? 'Approving...' : 'Approve All'}
+              {bulkApproveMut.isPending ? 'Approving...' : `Approve Review (${pendingCount})`}
             </button>
             <button onClick={handleSendApproved} disabled={sendApprovedMut.isPending || !campaignId}
               className="flex-1 px-3 py-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 disabled:opacity-50">
@@ -178,9 +204,9 @@ export default function ReviewQueue() {
                       <p className="text-xs text-muted-foreground">{l.company}</p>
                       <p className="text-xs text-muted-foreground/60">{l.title}</p>
                     </div>
-                    <div className="flex flex-col items-end gap-1">
+                    <div className="flex flex-col items-end gap-1.5">
                       {statusPill(l.status)}
-                      <span className={scoreClass(l.qualityScore)}>{l.qualityScore ? `${l.qualityScore}/10` : ''}</span>
+                      {scoreBadge(l.qualityScore)}
                     </div>
                   </div>
                 </div>
@@ -201,8 +227,8 @@ export default function ReviewQueue() {
         )}
       </div>
 
-      {/* RIGHT PANEL */}
-      <div className="flex-1 flex flex-col overflow-y-auto">
+      {/* RIGHT PANEL — scrolls independently */}
+      <div className="flex-1 flex flex-col overflow-y-auto sticky top-0 h-screen">
         {!selectedId || leadLoading ? (
           <div className="flex-1 flex items-center justify-center">
             {leadLoading ? (
@@ -237,6 +263,19 @@ export default function ReviewQueue() {
                   )}
                 </div>
               </div>
+
+              {/* Failure Reason */}
+              {selectedLead.status === 'FAILED' && (
+                <div className="glass-card mb-4 p-4" style={{ borderLeft: "3px solid #ef4444" }}>
+                  <p className="text-sm font-semibold text-red-400 mb-1">Pipeline Error</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {selectedLead.failReason || 'An unknown error occurred during processing.'}
+                  </p>
+                  <p className="text-xs text-muted-foreground/60 mt-2">
+                    You can regenerate this lead to retry, or discard it.
+                  </p>
+                </div>
+              )}
 
               {/* Hook Reasoning */}
               {selectedLead.hookReasoning && (

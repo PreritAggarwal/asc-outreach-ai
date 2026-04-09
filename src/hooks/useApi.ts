@@ -38,6 +38,7 @@ export const useCampaign = (id: string) =>
     queryKey: ['campaigns', id],
     queryFn: () => api.get<Campaign>(`/api/campaigns/${id}`),
     enabled: !!id,
+    refetchInterval: 5000,
   });
 
 export const useUploadCampaign = () => {

@@ -7,7 +7,7 @@ export const LEAD_STATUSES = [
   'PENDING', 'RESEARCHING', 'RESEARCHED', 'QUALIFYING',
   'QUALIFIED', 'FILTERED', 'STRATEGIZING', 'DRAFTING',
   'CRITIC_REVIEW', 'APPROVED', 'HUMAN_REVIEW', 'SENDING',
-  'SENT', 'BOUNCED', 'SKIPPED', 'DISCARDED',
+  'SENT', 'BOUNCED', 'SKIPPED', 'DISCARDED', 'FAILED',
 ] as const;
 export type LeadStatus = typeof LEAD_STATUSES[number];
 
@@ -41,9 +41,8 @@ export interface OrgSettings {
     proxycurl: boolean;
     apollo: boolean;
     exa: boolean;
-    groq: boolean;
-    anthropic: boolean;
-    smartlead: boolean;
+    gemini: boolean;
+    mailer: boolean;
     hubspot: boolean;
   };
 }
@@ -51,6 +50,10 @@ export interface OrgSettings {
 export interface CampaignStats {
   totalLeads: number;
   qualified: number;
+  filtered: number;
+  approved: number;
+  humanReview: number;
+  completed: number;
   sent: number;
   opened: number;
   replied: number;
@@ -115,6 +118,7 @@ export interface Lead {
   hookReasoning: string | null;
   hookAngle: string | null;
   retryCount: number;
+  failReason: string | null;
   sentAt: string | null;
   openCount: number;
   replied: boolean;
@@ -205,6 +209,7 @@ export interface WSLeadStatusEvent {
   leadId: string;
   status: LeadStatus;
   sources?: { proxycurl: string; apollo: string; exa: string };
+  failReason?: string;
 }
 
 export interface WSStageTransitionEvent {
@@ -213,4 +218,12 @@ export interface WSStageTransitionEvent {
   stage: string;
 }
 
-export type WSEvent = WSProgressEvent | WSLeadStatusEvent | WSStageTransitionEvent;
+export interface WSAIStreamEvent {
+  type: 'ai_stream';
+  leadId: string;
+  agent: 'strategist' | 'drafter' | 'critic';
+  token: string;
+  done: boolean;
+}
+
+export type WSEvent = WSProgressEvent | WSLeadStatusEvent | WSStageTransitionEvent | WSAIStreamEvent;

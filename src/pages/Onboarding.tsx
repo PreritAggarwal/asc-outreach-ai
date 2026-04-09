@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCompleteOnboarding } from '@/hooks/useApi';
+import { useAuth } from '@/lib/auth';
 import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
 import type { Tone } from '@/lib/types';
 
@@ -8,6 +9,7 @@ const STEPS = ['Value Proposition', 'ICP Definition', 'Email Tone'];
 
 export default function Onboarding() {
   const navigate = useNavigate();
+  const { markOnboardingComplete } = useAuth();
   const completeOnboarding = useCompleteOnboarding();
   const [step, setStep] = useState(0);
 
@@ -44,6 +46,8 @@ export default function Onboarding() {
         icpGeography,
         tone,
       });
+      // Update auth state BEFORE navigating so ProtectedRoute sees onboardingComplete=true
+      markOnboardingComplete();
       navigate('/');
     } catch (err) {
       console.error('Onboarding failed:', err);

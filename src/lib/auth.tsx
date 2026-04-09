@@ -9,6 +9,7 @@ interface AuthState {
   isLoading: boolean;
   login: (googleIdToken: string) => Promise<void>;
   logout: () => void;
+  markOnboardingComplete: () => void;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -83,8 +84,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     navigate('/login');
   };
 
+  const markOnboardingComplete = () => {
+    setUser((prev) => prev ? { ...prev, onboardingComplete: true } : null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, token, isLoading, login, logout, markOnboardingComplete }}>
       {children}
     </AuthContext.Provider>
   );

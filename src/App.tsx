@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import UploadLeads from "./pages/UploadLeads";
 import ReviewQueue from "./pages/ReviewQueue";
 import ResearchProgress from "./pages/ResearchProgress";
+import Campaigns from "./pages/Campaigns";
 import SettingsPage from "./pages/Settings";
 import Login from "./pages/Login";
 import Onboarding from "./pages/Onboarding";
@@ -62,7 +63,7 @@ function AppRoutes() {
       <Route path="/upload" element={<ProtectedRoute><AppLayout><UploadLeads /></AppLayout></ProtectedRoute>} />
       <Route path="/review" element={<ProtectedRoute><AppLayout><ReviewQueue /></AppLayout></ProtectedRoute>} />
       <Route path="/research" element={<ProtectedRoute><AppLayout><ResearchProgress /></AppLayout></ProtectedRoute>} />
-      <Route path="/campaigns" element={<ProtectedRoute><AppLayout><ResearchProgress /></AppLayout></ProtectedRoute>} />
+      <Route path="/campaigns" element={<ProtectedRoute><AppLayout><Campaigns /></AppLayout></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><AppLayout><SettingsPage /></AppLayout></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
     </Routes>

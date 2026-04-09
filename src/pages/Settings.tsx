@@ -198,13 +198,12 @@ export default function SettingsPage() {
             <h2 className="text-xl font-bold text-foreground mb-4">Connected Accounts</h2>
             <div className="space-y-3">
               {[
-                { name: "Smartlead", connected: settings?.apiKeys?.smartlead, detail: "Email delivery service" },
+                { name: "Gmail / SMTP", connected: settings?.apiKeys?.mailer, detail: "Email delivery (SMTP_USER in .env)" },
+                { name: "Gemini", connected: settings?.apiKeys?.gemini, detail: "AI pipeline — all stages (GEMINI_API_KEY in .env)" },
                 { name: "HubSpot", connected: settings?.apiKeys?.hubspot, detail: "CRM sync" },
                 { name: "Proxycurl", connected: settings?.apiKeys?.proxycurl, detail: "LinkedIn enrichment" },
                 { name: "Apollo.io", connected: settings?.apiKeys?.apollo, detail: "Company data" },
                 { name: "Exa.ai", connected: settings?.apiKeys?.exa, detail: "News intelligence" },
-                { name: "Groq", connected: settings?.apiKeys?.groq, detail: "Fast AI processing" },
-                { name: "Anthropic", connected: settings?.apiKeys?.anthropic, detail: "Claude AI drafting" },
               ].map((a) => (
                 <div key={a.name} className="glass-card-hover p-5 flex items-center justify-between">
                   <div>
