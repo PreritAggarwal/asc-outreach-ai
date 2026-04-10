@@ -73,6 +73,7 @@ export const useLeads = (filters: LeadFilters = {}) => {
   return useQuery({
     queryKey: ['leads', filters],
     queryFn: () => api.get<PaginatedResult<Lead>>(`/api/leads?${params}`),
+    refetchInterval: 5000,
   });
 };
 
@@ -81,6 +82,7 @@ export const useLead = (id: string) =>
     queryKey: ['leads', id],
     queryFn: () => api.get<Lead>(`/api/leads/${id}`),
     enabled: !!id,
+    refetchInterval: 3000,
   });
 
 export const useApproveLead = () => {
@@ -138,6 +140,15 @@ export const useSendApproved = () => {
   return useMutation({
     mutationFn: (campaignId: string) =>
       api.post<{ queuedCount: number }>('/api/leads/send-approved', { campaignId }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['leads'] }),
+  });
+};
+
+export const useBulkRetryFailed = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (campaignId: string) =>
+      api.post<{ retriedCount: number }>('/api/leads/bulk-retry-failed', { campaignId }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['leads'] }),
   });
 };
