@@ -1,6 +1,10 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Check, Edit3, RefreshCw, SkipForward, Trash2, ChevronDown, ChevronUp, Linkedin, Loader2, X } from "lucide-react";
+import { Check, Edit3, RefreshCw, SkipForward, Trash2, ChevronDown, ChevronUp, Linkedin, Loader2, X, Clock } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   useLeads, useLead, useApproveLead, useSkipLead, useDiscardLead,
   useRegenerateLead, useEditLead, useBulkApprove, useSendApproved, useCampaigns, useBulkRetryFailed,
@@ -62,6 +66,8 @@ export default function ReviewQueue() {
   const [page, setPage] = useState(1);
   const [draftVersion, setDraftVersion] = useState(0); // 0 = latest
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [discardConfirmOpen, setDiscardConfirmOpen] = useState(false);
+  const [sendConfirmOpen, setSendConfirmOpen] = useState(false);
 
   const { data: campaigns } = useCampaigns();
   const { data: leadsResult, isLoading: leadsLoading } = useLeads({
@@ -126,7 +132,11 @@ export default function ReviewQueue() {
 
   const handleDiscard = useCallback(() => {
     if (!selectedId) return;
-    if (!window.confirm("Discard this lead permanently? This cannot be undone.")) return;
+    setDiscardConfirmOpen(true);
+  }, [selectedId]);
+
+  const confirmDiscard = useCallback(() => {
+    if (!selectedId) return;
     discardMut.mutate(selectedId, {
       onSuccess: () => { addToast("Lead discarded"); advanceToNext(); },
       onError: (e) => addToast(e.message || "Failed to discard", "error"),
@@ -239,9 +249,13 @@ export default function ReviewQueue() {
     }
   };
 
-  const handleSendApproved = async () => {
+  const handleSendApproved = () => {
+    if (!campaignId || approvedCount === 0) return;
+    setSendConfirmOpen(true);
+  };
+
+  const confirmSendApproved = async () => {
     if (!campaignId) return;
-    if (!window.confirm(`Send emails to all ${approvedCount} approved lead(s)? This will trigger real outbound emails via Smartlead.`)) return;
     try {
       await sendApprovedMut.mutateAsync(campaignId);
       addToast(`${approvedCount} emails queued for sending`);
@@ -250,11 +264,11 @@ export default function ReviewQueue() {
     }
   };
 
-  // Normalize overallScore (0-100) to a 1-10 display scale
+  // Normalize overallScore: supports both 0-10 and 0-100 scales
   const normScore = (s: number | null): number | null => {
     if (s == null) return null;
-    if (s <= 10) return s;
-    return Math.round((s / 10) * 10) / 10;
+    if (s <= 10) return Math.round(s * 10) / 10;
+    return Math.round(s) / 10;
   };
 
   const scoreClass = (s: number | null) => {
@@ -283,12 +297,12 @@ export default function ReviewQueue() {
   };
 
   const statusPill = (s: LeadStatus) => {
-    if (s === "APPROVED") return <span className="status-approved">✅ Approved</span>;
+    if (s === "APPROVED") return <span className="status-approved"><Check className="w-3 h-3 inline mr-0.5" />Approved</span>;
     if (s === "SKIPPED") return <span className="status-skipped">Skipped</span>;
     if (s === "SENT") return <span className="status-complete">Sent</span>;
-    if (s === "HUMAN_REVIEW") return <span className="status-processing">🟡 Review</span>;
-    if (s === "FAILED") return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400">✕ Failed</span>;
-    if (s === "FILTERED") return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-400">⊘ Rejected</span>;
+    if (s === "HUMAN_REVIEW") return <span className="status-processing"><Clock className="w-3 h-3 inline mr-0.5" />Review</span>;
+    if (s === "FAILED") return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400"><X className="w-3 h-3" />Failed</span>;
+    if (s === "FILTERED") return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-400">Rejected</span>;
     const processing = ['QUALIFYING', 'QUALIFIED', 'STRATEGIZING', 'DRAFTING', 'CRITIC_REVIEW', 'RESEARCHING', 'RESEARCHED'];
     if (processing.includes(s)) return <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400"><Loader2 className="w-3 h-3 animate-spin" /> Processing</span>;
     return <span className="status-pending">Pending</span>;
@@ -481,7 +495,6 @@ export default function ReviewQueue() {
               {/* Hook Angle */}
               {selectedLead.hookAngle && (
                 <div className="glass-card mb-4 px-5 py-3 flex items-start gap-2" style={{ borderLeft: "3px solid #7C3AED" }}>
-                  <span className="text-sm">🎯</span>
                   <p className="text-sm text-muted-foreground leading-snug">{selectedLead.hookAngle}</p>
                 </div>
               )}
@@ -558,7 +571,7 @@ export default function ReviewQueue() {
                 <div className="glass-card overflow-hidden">
                   <button onClick={() => setResearchOpen(!researchOpen)}
                     className="w-full flex items-center justify-between px-5 py-3 text-sm font-semibold text-foreground hover:bg-secondary/20 transition-colors">
-                    <span>📊 Research Context</span>
+                    <span>Research Context</span>
                     {researchOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </button>
                   {researchOpen && (
@@ -598,6 +611,42 @@ export default function ReviewQueue() {
           </>
         ) : null}
       </div>
+
+      {/* Discard confirmation */}
+      <AlertDialog open={discardConfirmOpen} onOpenChange={setDiscardConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Discard this lead?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This lead will be permanently discarded and removed from your queue. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDiscard} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Discard
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Send approved confirmation */}
+      <AlertDialog open={sendConfirmOpen} onOpenChange={setSendConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Send {approvedCount} approved email{approvedCount !== 1 ? 's' : ''}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will send emails to all {approvedCount} approved contact{approvedCount !== 1 ? 's' : ''}. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmSendApproved} disabled={sendApprovedMut.isPending}>
+              {sendApprovedMut.isPending ? 'Sending...' : 'Send Emails'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

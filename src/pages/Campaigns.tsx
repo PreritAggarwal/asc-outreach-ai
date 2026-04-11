@@ -5,10 +5,10 @@ import { Link } from "react-router-dom";
 import type { Campaign } from "@/lib/types";
 
 const statusPill = (status: Campaign["status"]) => {
-  if (status === "ACTIVE") return <span className="status-active">🟢 Active</span>;
-  if (status === "COMPLETE") return <span className="status-complete">✅ Complete</span>;
+  if (status === "ACTIVE") return <span className="status-active">Active</span>;
+  if (status === "COMPLETE") return <span className="status-complete">Complete</span>;
   if (status === "FAILED") return <span className="text-xs font-medium text-destructive px-2 py-1 rounded-full bg-destructive/10">Failed</span>;
-  return <span className="status-processing">🟡 Processing</span>;
+  return <span className="status-processing">Processing</span>;
 };
 
 const Skeleton = ({ className }: { className: string }) => (
@@ -78,7 +78,7 @@ export default function Campaigns() {
                   <tr
                     key={c.id}
                     onClick={() => navigate(`/research?campaignId=${c.id}`)}
-                    className="border-t cursor-pointer transition-colors hover:bg-secondary/30"
+                    className="border-t cursor-pointer transition-colors hover:bg-secondary/30 group"
                     style={{ borderColor: "rgba(255,255,255,0.04)" }}>
                     <td className="px-5 py-3.5">
                       <p className="font-semibold text-foreground">{c.name}</p>

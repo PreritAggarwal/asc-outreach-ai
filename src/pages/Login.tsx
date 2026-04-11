@@ -21,10 +21,10 @@ export default function Login() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
           <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-2xl mb-4">
-            ASC
+            OP
           </div>
-          <h1 className="text-3xl font-bold text-foreground tracking-tight">ASC Outreach</h1>
-          <p className="text-muted-foreground mt-2 text-center">AI-powered cold email outreach for American Screening Corporation</p>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">Outpilot</h1>
+          <p className="text-muted-foreground mt-2 text-center">AI-powered B2B outreach automation</p>
         </div>
 
         {/* Login card */}
@@ -78,7 +78,7 @@ export default function Login() {
                 disabled={loading}
                 className="w-full px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-all duration-200 disabled:opacity-50"
               >
-                {loading ? 'Signing in...' : 'Sign in (Dev Mode)'}
+                {loading ? 'Signing in...' : 'Sign in'}
               </button>
             )}
           </div>

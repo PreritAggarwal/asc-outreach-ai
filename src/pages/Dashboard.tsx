@@ -54,9 +54,9 @@ export default function Dashboard() {
 
   const statusLabel = (campaign: any) => {
     const s = campaign.status?.toLowerCase() || 'processing';
-    if (s === 'active') return <span className="status-active">🟢 Active</span>;
-    if (s === 'complete') return <span className="status-complete">✅ Complete</span>;
-    return <span className="status-processing">🟡 Processing</span>;
+    if (s === 'active') return <span className="status-active">Active</span>;
+    if (s === 'complete') return <span className="status-complete">Complete</span>;
+    return <span className="status-processing">Processing</span>;
   };
 
   // Loading skeleton
@@ -186,8 +186,8 @@ export default function Dashboard() {
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {a.type === 'open' && `opened your email`}
-                        {a.type === 'reply' && `replied — Positive 🟢`}
-                        {a.type === 'bounce' && `bounced ❌`}
+                        {a.type === 'reply' && `replied — Positive`}
+                        {a.type === 'bounce' && `bounced`}
                         {a.type === 'sent' && `email sent`}
                       </p>
                       <p className="text-xs text-muted-foreground/60 mt-0.5">

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Upload, Inbox, BarChart2, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Upload, Inbox, BarChart2, Settings, LogOut, Activity } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { useDashboardMetrics } from "@/hooks/useApi";
@@ -7,6 +7,7 @@ const navItems = [
   { title: "Dashboard", path: "/", icon: LayoutDashboard },
   { title: "Upload Leads", path: "/upload", icon: Upload },
   { title: "Review Queue", path: "/review", icon: Inbox, badge: true },
+  { title: "Pipeline", path: "/research", icon: Activity },
   { title: "Campaigns", path: "/campaigns", icon: BarChart2 },
   { title: "Settings", path: "/settings", icon: Settings },
 ];
@@ -27,9 +28,9 @@ export default function AppSidebar() {
       {/* Logo */}
       <div className="px-5 py-6 flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
-          ASC
+          OP
         </div>
-        <span className="text-foreground font-semibold text-lg tracking-tight">ASC Outreach</span>
+        <span className="text-foreground font-semibold text-lg tracking-tight">Outpilot</span>
       </div>
 
       {/* Nav */}

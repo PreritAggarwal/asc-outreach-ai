@@ -78,7 +78,7 @@ export default function SettingsPage() {
             {updateSettings.isPending ? 'Saving...' : 'Save Changes'}
           </button>
           {updateSettings.isSuccess && (
-            <p className="text-xs text-success text-center mt-2">Saved successfully ✅</p>
+            <p className="text-xs text-success text-center mt-2 flex items-center justify-center gap-1"><Save className="w-3 h-3" /> Saved successfully</p>
           )}
         </div>
       </div>
@@ -198,12 +198,12 @@ export default function SettingsPage() {
             <h2 className="text-xl font-bold text-foreground mb-4">Connected Accounts</h2>
             <div className="space-y-3">
               {[
-                { name: "Gmail / SMTP", connected: settings?.apiKeys?.mailer, detail: "Email delivery (SMTP_USER in .env)" },
-                { name: "Gemini", connected: settings?.apiKeys?.gemini, detail: "AI pipeline — all stages (GEMINI_API_KEY in .env)" },
-                { name: "HubSpot", connected: settings?.apiKeys?.hubspot, detail: "CRM sync" },
-                { name: "Proxycurl", connected: settings?.apiKeys?.proxycurl, detail: "LinkedIn enrichment" },
-                { name: "Apollo.io", connected: settings?.apiKeys?.apollo, detail: "Company data" },
-                { name: "Exa.ai", connected: settings?.apiKeys?.exa, detail: "News intelligence" },
+                { name: "Gmail / SMTP", connected: settings?.apiKeys?.mailer, detail: "Outbound email delivery" },
+                { name: "Gemini", connected: settings?.apiKeys?.gemini, detail: "AI pipeline (qualification, drafting, critique)" },
+                { name: "HubSpot", connected: settings?.apiKeys?.hubspot, detail: "CRM sync — contacts and deals" },
+                { name: "Proxycurl", connected: settings?.apiKeys?.proxycurl, detail: "LinkedIn profile enrichment" },
+                { name: "Apollo.io", connected: settings?.apiKeys?.apollo, detail: "Company and contact data" },
+                { name: "Exa.ai", connected: settings?.apiKeys?.exa, detail: "News and web intelligence" },
               ].map((a) => (
                 <div key={a.name} className="glass-card-hover p-5 flex items-center justify-between">
                   <div>
@@ -211,7 +211,7 @@ export default function SettingsPage() {
                     <p className="text-sm text-muted-foreground">{a.detail}</p>
                   </div>
                   {a.connected ? (
-                    <span className="status-active">Connected 🟢</span>
+                    <span className="status-active">Connected</span>
                   ) : (
                     <span className="text-xs text-muted-foreground px-3 py-1.5 rounded-full bg-secondary/50">Not configured</span>
                   )}

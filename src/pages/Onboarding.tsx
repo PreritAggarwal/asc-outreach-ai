@@ -13,14 +13,16 @@ export default function Onboarding() {
   const completeOnboarding = useCompleteOnboarding();
   const [step, setStep] = useState(0);
 
-  // Form state
-  const [valueProposition, setValueProposition] = useState('');
-  const [icpIndustries, setIcpIndustries] = useState<string[]>([]);
+  // Form state (pre-filled with demo defaults for easy walkthrough)
+  const [valueProposition, setValueProposition] = useState(
+    'We help B2B sales teams automate personalized outreach at scale, reducing time-to-first-reply by 60% through AI-researched, human-reviewed emails.',
+  );
+  const [icpIndustries, setIcpIndustries] = useState<string[]>(['SaaS', 'Technology', 'Healthcare IT']);
   const [industryInput, setIndustryInput] = useState('');
   const [icpCompanySize, setIcpCompanySize] = useState({ min: 50, max: 5000 });
-  const [icpTargetRoles, setIcpTargetRoles] = useState<string[]>([]);
+  const [icpTargetRoles, setIcpTargetRoles] = useState<string[]>(['VP Sales', 'Head of Growth', 'Director of Operations']);
   const [roleInput, setRoleInput] = useState('');
-  const [icpGeography, setIcpGeography] = useState<string[]>([]);
+  const [icpGeography, setIcpGeography] = useState<string[]>(['United States']);
   const [geoInput, setGeoInput] = useState('');
   const [tone, setTone] = useState<Tone>('professional');
 
