@@ -136,6 +136,8 @@ export default function UploadLeads() {
   }
 
   // Post-upload result
+  const allDuplicates = result.validLeads === 0 && result.duplicates > 0;
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold text-foreground mb-6">Upload Complete</h1>
@@ -144,23 +146,40 @@ export default function UploadLeads() {
       <div className="glass-card p-5 mb-6">
         <h3 className="text-foreground font-semibold mb-3">Processing Summary</h3>
         <div className="flex flex-wrap gap-4 text-sm">
-          <span className="flex items-center gap-2 text-success">
+          <span className={`flex items-center gap-2 ${result.validLeads > 0 ? 'text-success' : 'text-muted-foreground'}`}>
             <CheckCircle className="w-4 h-4" /> {result.validLeads.toLocaleString()} valid leads ready
           </span>
           <span className="flex items-center gap-2 text-warning">
             <AlertTriangle className="w-4 h-4" /> {result.skipped} rows skipped
           </span>
-          <span className="flex items-center gap-2 text-muted-foreground">
+          <span className={`flex items-center gap-2 ${result.duplicates > 0 ? 'text-warning' : 'text-muted-foreground'}`}>
             <RefreshCw className="w-4 h-4" /> {result.duplicates} duplicates found
           </span>
         </div>
       </div>
 
+      {/* All-duplicates warning */}
+      {allDuplicates && (
+        <div className="glass-card p-5 mb-6 border border-warning/30 bg-warning/5">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
+            <div>
+              <p className="text-foreground font-semibold text-sm">All leads are duplicates</p>
+              <p className="text-muted-foreground text-sm mt-1">
+                All {result.duplicates} lead{result.duplicates !== 1 ? 's' : ''} in this CSV already exist in your account from a previous upload. No new leads were processed.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-3">
-        <button onClick={() => navigate(`/research?campaignId=${result.campaignId}`)}
-          className="px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-all duration-200">
-          View Processing Progress →
-        </button>
+        {result.validLeads > 0 && (
+          <button onClick={() => navigate(`/research?campaignId=${result.campaignId}`)}
+            className="px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-all duration-200">
+            View Processing Progress →
+          </button>
+        )}
         <button onClick={() => { setFile(null); setResult(null); }}
           className="px-6 py-3 bg-secondary/50 text-foreground font-semibold rounded-lg hover:bg-secondary/80 border border-input transition-all duration-200">
           Upload Another
