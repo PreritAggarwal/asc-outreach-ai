@@ -189,7 +189,7 @@ export default function ReviewQueue() {
     if (!selectedId) return;
     if (key === 'a') handleApprove();
     if (key === 'e') setEditMode(true);
-    if (key === 'r') handleRegenerate();
+
     if (key === 's') handleSkip();
     if (key === 'd') handleDiscard();
   }, [selectedId, leads, handleApprove, handleSkip, handleDiscard, handleRegenerate]);
@@ -591,7 +591,6 @@ export default function ReviewQueue() {
                 {[
                   { label: "Approve", icon: Check, key: "A", action: handleApprove, primary: true, loading: approveMut.isPending },
                   { label: "Edit", icon: Edit3, key: "E", action: () => setEditMode(true), primary: false, loading: false },
-                  { label: "Regenerate", icon: RefreshCw, key: "R", action: handleRegenerate, primary: false, loading: regenerateMut.isPending },
                   { label: "Skip", icon: SkipForward, key: "S", action: handleSkip, primary: false, loading: skipMut.isPending },
                   { label: "Discard", icon: Trash2, key: "D", action: handleDiscard, primary: false, loading: discardMut.isPending },
                 ].map((btn) => (

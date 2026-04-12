@@ -97,7 +97,7 @@ export default function ResearchProgress() {
     for (const e of events) {
       if (e.type === 'lead_status') {
         const s = (e as WSLeadStatusEvent).status;
-        if (s === 'APPROVED' || s === 'HUMAN_REVIEW' || s === 'FILTERED' || s === 'FAILED') {
+        if (s === 'APPROVED' || s === 'HUMAN_REVIEW' || s === 'FILTERED' || s === 'FAILED' || s === 'SENT' || s === 'SKIPPED' || s === 'DISCARDED') {
           terminal.add((e as WSLeadStatusEvent).leadId);
         }
       }
