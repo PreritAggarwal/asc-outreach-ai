@@ -25,19 +25,17 @@ interface Toast {
 let toastId = 0;
 
 function ToastContainer({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: number) => void }) {
+  const toastStyle = (type: Toast["type"]) => {
+    if (type === "success") return "bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400";
+    if (type === "error")   return "bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400";
+    return "bg-blue-500/10 border-blue-500/30 text-blue-600 dark:text-blue-400";
+  };
   return (
-    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2" style={{ pointerEvents: "none" }}>
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
       {toasts.map((t) => (
         <div
           key={t.id}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium shadow-lg animate-in slide-in-from-right"
-          style={{
-            pointerEvents: "auto",
-            background: t.type === "success" ? "rgba(34,197,94,0.15)" : t.type === "error" ? "rgba(239,68,68,0.15)" : "rgba(59,130,246,0.15)",
-            color: t.type === "success" ? "#4ade80" : t.type === "error" ? "#f87171" : "#60a5fa",
-            border: `1px solid ${t.type === "success" ? "rgba(34,197,94,0.3)" : t.type === "error" ? "rgba(239,68,68,0.3)" : "rgba(59,130,246,0.3)"}`,
-            backdropFilter: "blur(12px)",
-          }}
+          className={`pointer-events-auto flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium shadow-lg border backdrop-blur animate-in slide-in-from-right ${toastStyle(t.type)}`}
         >
           {t.type === "success" ? "✓" : t.type === "error" ? "✕" : "ℹ"} {t.message}
           <button onClick={() => onDismiss(t.id)} className="ml-2 opacity-60 hover:opacity-100">
@@ -327,8 +325,8 @@ export default function ReviewQueue() {
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
       {/* LEFT PANEL — sticky, does not scroll with page */}
-      <div className="w-[380px] shrink-0 border-r flex flex-col sticky top-0 h-screen" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-        <div className="p-4 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+      <div className="w-[380px] shrink-0 border-r border-border flex flex-col sticky top-0 h-screen bg-card/50">
+        <div className="p-4 border-b border-border">
           {/* Campaign selector */}
           <select value={campaignId} onChange={(e) => { setCampaignId(e.target.value); setPage(1); setSelectedId(''); }}
             className="w-full bg-secondary/30 border border-input rounded-md px-3 py-2 text-foreground text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-primary/50">
@@ -346,8 +344,7 @@ export default function ReviewQueue() {
           </div>
           <div className="flex gap-2">
             <button onClick={handleBulkApprove} disabled={bulkApproveMut.isPending || pendingCount === 0}
-              className="flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-all duration-200 hover:bg-secondary/50 disabled:opacity-50"
-              style={{ borderColor: "rgba(255,255,255,0.1)", color: "hsl(0 0% 95%)" }}>
+              className="flex-1 px-3 py-2 text-sm font-medium rounded-lg border border-border text-foreground transition-all duration-200 hover:bg-muted disabled:opacity-50">
               {bulkApproveMut.isPending ? 'Approving...' : `Approve Review (${pendingCount})`}
             </button>
             <button onClick={handleSendApproved} disabled={sendApprovedMut.isPending || !campaignId}
@@ -366,8 +363,7 @@ export default function ReviewQueue() {
                 }
               }}
               disabled={bulkRetryMut.isPending}
-              className="w-full mt-2 px-3 py-2 text-sm font-medium rounded-lg border transition-all duration-200 hover:bg-red-500/10 disabled:opacity-50"
-              style={{ borderColor: "rgba(239,68,68,0.2)", color: "#f87171" }}>
+              className="w-full mt-2 px-3 py-2 text-sm font-medium rounded-lg border border-destructive/30 text-destructive transition-all duration-200 hover:bg-destructive/10 disabled:opacity-50">
               {bulkRetryMut.isPending ? 'Retrying...' : `Retry Failed (${failedCount})`}
             </button>
           )}
@@ -422,12 +418,12 @@ export default function ReviewQueue() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="p-3 border-t flex items-center justify-between text-xs" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div className="p-3 border-t border-border flex items-center justify-between text-xs">
             <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page <= 1}
-              className="px-3 py-1 rounded bg-secondary/50 text-foreground disabled:opacity-30">Prev</button>
+              className="px-3 py-1 rounded bg-muted text-foreground disabled:opacity-30 hover:bg-accent transition-colors">Prev</button>
             <span className="text-muted-foreground">Page {page} of {totalPages} ({totalLeads} leads)</span>
             <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page >= totalPages}
-              className="px-3 py-1 rounded bg-secondary/50 text-foreground disabled:opacity-30">Next</button>
+              className="px-3 py-1 rounded bg-muted text-foreground disabled:opacity-30 hover:bg-accent transition-colors">Next</button>
           </div>
         )}
       </div>
@@ -500,7 +496,7 @@ export default function ReviewQueue() {
               )}
 
               {/* Email Preview / Edit */}
-              <div className="glass-card mb-4 p-5" style={{ borderColor: "rgba(255,255,255,0.15)" }}>
+              <div className="glass-card mb-4 p-5">
                 {/* Draft version switcher */}
                 {allDrafts.length > 1 && (
                   <div className="flex items-center gap-2 mb-3">
@@ -586,7 +582,7 @@ export default function ReviewQueue() {
             </div>
 
             {/* Action bar */}
-            <div className="border-t p-4" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+            <div className="border-t border-border p-4 bg-card/50">
               <div className="flex gap-3">
                 {[
                   { label: "Approve", icon: Check, key: "A", action: handleApprove, primary: true, loading: approveMut.isPending },

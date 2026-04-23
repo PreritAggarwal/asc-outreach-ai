@@ -63,13 +63,8 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/5 blur-3xl animate-blob" />
-        <div className="absolute top-2/3 right-1/4 w-80 h-80 rounded-full bg-primary/3 blur-3xl animate-blob-delay" />
-      </div>
-
-      <div className="relative z-10 w-full max-w-2xl mx-auto px-6">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12">
+      <div className="w-full max-w-2xl mx-auto px-6">
         {/* Progress */}
         <div className="flex items-center justify-center gap-2 mb-8">
           {STEPS.map((s, i) => (

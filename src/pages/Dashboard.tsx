@@ -61,7 +61,7 @@ export default function Dashboard() {
 
   // Loading skeleton
   const Skeleton = ({ className }: { className: string }) => (
-    <div className={`animate-pulse bg-secondary/40 rounded-lg ${className}`} />
+    <div className={`animate-pulse bg-muted rounded-lg ${className}`} />
   );
 
   return (
@@ -109,7 +109,7 @@ export default function Dashboard() {
 
         {/* Campaign Table */}
         <div className="glass-card overflow-hidden">
-          <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <h2 className="text-foreground font-semibold">Campaigns</h2>
             <Link to="/upload" className="text-sm text-primary hover:underline">+ New Campaign</Link>
           </div>
@@ -132,7 +132,7 @@ export default function Dashboard() {
                 </thead>
                 <tbody>
                   {(campaigns || []).map((c) => (
-                    <tr key={c.id} className="border-t transition-colors hover:bg-secondary/30 cursor-pointer" style={{ borderColor: "rgba(255,255,255,0.04)" }}
+                    <tr key={c.id} className="border-t border-border transition-colors hover:bg-muted/50 cursor-pointer"
                       onClick={() => window.location.href = `/research?campaignId=${c.id}`}>
                       <td className="px-5 py-3 font-medium text-foreground">{c.name}</td>
                       <td className="px-3 py-3 text-muted-foreground">{new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</td>
@@ -157,14 +157,14 @@ export default function Dashboard() {
       {/* Activity Feed */}
       <div className="w-[300px] shrink-0">
         <div className="glass-card h-fit">
-          <div className="px-4 py-3 border-b flex items-center gap-2" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div className="px-4 py-3 border-b border-border flex items-center gap-2">
             <Clock className="w-4 h-4 text-primary" />
             <h3 className="text-foreground font-semibold text-sm">Live Activity</h3>
           </div>
           <div className="p-2 space-y-1 max-h-[500px] overflow-y-auto">
             {activityLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="p-3"><div className="animate-pulse bg-secondary/40 rounded-lg h-12" /></div>
+                <div key={i} className="p-3"><div className="animate-pulse bg-muted rounded-lg h-12" /></div>
               ))
             ) : (activities || []).length === 0 ? (
               <div className="p-6 text-center text-muted-foreground text-sm">No recent activity</div>
@@ -174,7 +174,7 @@ export default function Dashboard() {
                 const color = colorForType(a.type);
                 const initials = a.company.slice(0, 2).toUpperCase();
                 return (
-                  <div key={i} className="flex items-start gap-3 p-3 rounded-lg transition-colors hover:bg-secondary/30">
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-lg transition-colors hover:bg-muted/50">
                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
                       style={{ background: `${color}20`, color }}>
                       {initials}

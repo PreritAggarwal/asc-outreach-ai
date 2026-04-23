@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BarChart2, Plus, ArrowRight } from "lucide-react";
-import { useCampaigns } from "@/hooks/useApi";
+import { BarChart2, Plus, ArrowRight, Trash2 } from "lucide-react";
+import { useCampaigns, useDeleteCampaign } from "@/hooks/useApi";
 import { Link } from "react-router-dom";
 import type { Campaign } from "@/lib/types";
 
@@ -18,6 +19,13 @@ const Skeleton = ({ className }: { className: string }) => (
 export default function Campaigns() {
   const navigate = useNavigate();
   const { data: campaigns, isLoading } = useCampaigns();
+  const deleteCampaign = useDeleteCampaign();
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  const handleDelete = async (id: string) => {
+    await deleteCampaign.mutateAsync(id);
+    setConfirmId(null);
+  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -60,7 +68,7 @@ export default function Campaigns() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-muted-foreground text-left border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+                <tr className="text-muted-foreground text-left border-b border-border">
                   <th className="px-5 py-3.5 font-medium">Campaign</th>
                   <th className="px-4 py-3.5 font-medium">Created</th>
                   <th className="px-4 py-3.5 font-medium">Total</th>
@@ -78,8 +86,8 @@ export default function Campaigns() {
                   <tr
                     key={c.id}
                     onClick={() => navigate(`/research?campaignId=${c.id}`)}
-                    className="border-t cursor-pointer transition-colors hover:bg-secondary/30 group"
-                    style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+                    className="border-t border-border cursor-pointer transition-colors hover:bg-muted/50 group"
+                  >
                     <td className="px-5 py-3.5">
                       <p className="font-semibold text-foreground">{c.name}</p>
                       <p className="text-xs text-muted-foreground">{c.id.slice(0, 8)}</p>
@@ -105,12 +113,35 @@ export default function Campaigns() {
                     </td>
                     <td className="px-4 py-3.5">{statusPill(c.status)}</td>
                     <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={(e) => { e.stopPropagation(); navigate(`/review?campaignId=${c.id}`); }}
                           className="text-xs text-primary hover:underline flex items-center gap-1">
                           Review <ArrowRight className="w-3 h-3" />
                         </button>
+                        {confirmId === c.id ? (
+                          <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+                            <span className="text-xs text-muted-foreground">Delete?</span>
+                            <button
+                              onClick={() => handleDelete(c.id)}
+                              disabled={deleteCampaign.isPending}
+                              className="text-xs font-semibold text-destructive hover:underline disabled:opacity-50">
+                              {deleteCampaign.isPending ? 'Deleting…' : 'Yes'}
+                            </button>
+                            <button
+                              onClick={() => setConfirmId(null)}
+                              className="text-xs text-muted-foreground hover:text-foreground">
+                              No
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setConfirmId(c.id); }}
+                            className="text-muted-foreground hover:text-destructive transition-colors"
+                            title="Delete campaign">
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

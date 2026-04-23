@@ -41,7 +41,7 @@ export interface OrgSettings {
     proxycurl: boolean;
     apollo: boolean;
     exa: boolean;
-    gemini: boolean;
+    claude: boolean;
     mailer: boolean;
     hubspot: boolean;
   };

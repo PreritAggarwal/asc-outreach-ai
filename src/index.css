@@ -1,43 +1,77 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* ── Light theme (default) ── */
   :root {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 95%;
-    --card: 240 6% 8%;
-    --card-foreground: 0 0% 95%;
-    --popover: 240 6% 8%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 263 70% 58%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 6% 14%;
-    --secondary-foreground: 0 0% 90%;
-    --muted: 240 5% 16%;
-    --muted-foreground: 240 5% 55%;
-    --accent: 263 70% 58%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 100% / 0.1;
-    --input: 0 0% 100% / 0.1;
-    --ring: 263 70% 58%;
-    --radius: 0.75rem;
-    --sidebar-background: 240 8% 6%;
-    --sidebar-foreground: 0 0% 85%;
-    --sidebar-primary: 263 70% 58%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 263 70% 58% / 0.15;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 100% / 0.06;
-    --sidebar-ring: 263 70% 58%;
+    --background: 0 0% 98%;
+    --foreground: 224 71% 4%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+    --radius: 0.5rem;
 
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-hover: rgba(255, 255, 255, 0.08);
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 224 71% 4%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 221 83% 53%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 221 83% 53%;
+
+    --success: 142 60% 40%;
+    --warning: 38 92% 45%;
+  }
+
+  /* ── Dark theme ── */
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 8%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 6%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62% 42%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 217 91% 60%;
+
+    --sidebar-background: 222 47% 4%;
+    --sidebar-foreground: 210 40% 85%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 222 47% 4%;
+    --sidebar-accent: 217 33% 14%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 11%;
+    --sidebar-ring: 217 91% 60%;
+
     --success: 142 71% 45%;
     --warning: 38 92% 50%;
   }
@@ -49,91 +83,107 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight;
   }
 }
 
 @layer components {
+  /* ── Cards ── */
   .glass-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(12px);
-    @apply rounded-xl;
+    @apply bg-card border border-border rounded-lg shadow-sm;
   }
   .glass-card-hover {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(12px);
-    @apply rounded-xl transition-all duration-300;
+    @apply bg-card border border-border rounded-lg shadow-sm transition-all duration-200 cursor-pointer;
   }
   .glass-card-hover:hover {
-    background: var(--glass-hover);
-    border-color: rgba(124, 58, 237, 0.3);
-    transform: translateY(-1px);
+    @apply shadow-md -translate-y-px;
+    border-color: hsl(var(--primary) / 0.3);
   }
+
+  /* ── Badge ── */
   .badge-count {
     @apply inline-flex items-center justify-center rounded-full text-xs font-semibold px-2 py-0.5;
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
   }
+
+  /* ── Status badges — light ── */
   .status-active {
     @apply inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full;
-    background: hsla(142, 71%, 45%, 0.15);
-    color: hsl(142, 71%, 55%);
+    background: hsla(142, 60%, 40%, 0.1);
+    color: hsl(142, 60%, 32%);
   }
   .status-complete {
     @apply inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full;
-    background: hsla(142, 71%, 45%, 0.15);
-    color: hsl(142, 71%, 55%);
+    background: hsla(142, 60%, 40%, 0.1);
+    color: hsl(142, 60%, 32%);
   }
   .status-processing {
     @apply inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full;
-    background: hsla(38, 92%, 50%, 0.15);
-    color: hsl(38, 92%, 60%);
+    background: hsla(38, 92%, 45%, 0.1);
+    color: hsl(38, 70%, 35%);
   }
   .status-pending {
     @apply inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full;
-    background: hsla(263, 70%, 58%, 0.15);
-    color: hsl(263, 70%, 68%);
+    background: hsla(221, 83%, 53%, 0.1);
+    color: hsl(221, 70%, 42%);
   }
   .status-approved {
     @apply inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full;
-    background: hsla(142, 71%, 45%, 0.15);
-    color: hsl(142, 71%, 55%);
+    background: hsla(142, 60%, 40%, 0.1);
+    color: hsl(142, 60%, 32%);
   }
   .status-skipped {
     @apply inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full;
-    background: hsla(0, 0%, 50%, 0.15);
-    color: hsl(0, 0%, 60%);
+    background: hsla(0, 0%, 50%, 0.1);
+    color: hsl(0, 0%, 38%);
   }
   .quality-high {
     @apply inline-flex items-center text-xs font-bold px-2 py-0.5 rounded-md;
-    background: hsla(142, 71%, 45%, 0.15);
-    color: hsl(142, 71%, 55%);
+    background: hsla(142, 60%, 40%, 0.1);
+    color: hsl(142, 60%, 32%);
   }
   .quality-mid {
     @apply inline-flex items-center text-xs font-bold px-2 py-0.5 rounded-md;
+    background: hsla(38, 92%, 45%, 0.1);
+    color: hsl(38, 70%, 35%);
+  }
+
+  /* ── Status badges — dark overrides ── */
+  .dark .status-active {
+    background: hsla(142, 71%, 45%, 0.15);
+    color: hsl(142, 71%, 55%);
+  }
+  .dark .status-complete {
+    background: hsla(142, 71%, 45%, 0.15);
+    color: hsl(142, 71%, 55%);
+  }
+  .dark .status-processing {
     background: hsla(38, 92%, 50%, 0.15);
     color: hsl(38, 92%, 60%);
   }
-}
-
-@keyframes blob-float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-}
-
-.animate-blob {
-  animation: blob-float 20s ease-in-out infinite;
-}
-
-.animate-blob-delay {
-  animation: blob-float 25s ease-in-out infinite;
-  animation-delay: 5s;
-}
-
-.animate-blob-delay-2 {
-  animation: blob-float 30s ease-in-out infinite;
-  animation-delay: 10s;
+  .dark .status-pending {
+    background: hsla(217, 91%, 60%, 0.15);
+    color: hsl(217, 91%, 70%);
+  }
+  .dark .status-approved {
+    background: hsla(142, 71%, 45%, 0.15);
+    color: hsl(142, 71%, 55%);
+  }
+  .dark .status-skipped {
+    background: hsla(0, 0%, 50%, 0.15);
+    color: hsl(0, 0%, 60%);
+  }
+  .dark .quality-high {
+    background: hsla(142, 71%, 45%, 0.15);
+    color: hsl(142, 71%, 55%);
+  }
+  .dark .quality-mid {
+    background: hsla(38, 92%, 50%, 0.15);
+    color: hsl(38, 92%, 60%);
+  }
 }

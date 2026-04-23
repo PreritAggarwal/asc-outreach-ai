@@ -52,6 +52,17 @@ export const useUploadCampaign = () => {
   });
 };
 
+export const useDeleteCampaign = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/api/campaigns/${id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['campaigns'] });
+      qc.invalidateQueries({ queryKey: ['dashboard'] });
+    },
+  });
+};
+
 // ============================================
 // Leads
 // ============================================

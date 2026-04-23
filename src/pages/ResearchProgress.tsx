@@ -240,8 +240,8 @@ export default function ResearchProgress() {
       <div className="flex justify-center mb-10">
         <div className="relative">
           <svg width="220" height="220" viewBox="0 0 220 220">
-            <circle cx="110" cy="110" r="90" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="12" />
-            <circle cx="110" cy="110" r="90" fill="none" stroke="#7C3AED" strokeWidth="12" strokeLinecap="round"
+            <circle cx="110" cy="110" r="90" fill="none" stroke="hsl(var(--muted))" strokeWidth="12" />
+            <circle cx="110" cy="110" r="90" fill="none" stroke="hsl(var(--primary))" strokeWidth="12" strokeLinecap="round"
               strokeDasharray={circumference} strokeDashoffset={offset}
               transform="rotate(-90 110 110)" className="transition-all duration-1000" />
           </svg>
@@ -274,11 +274,11 @@ export default function ResearchProgress() {
       {/* AI Streaming Panel */}
       {activeStreams.length > 0 && (
         <div className="glass-card overflow-hidden mb-6">
-          <div className="px-5 py-3 border-b flex items-center gap-2" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div className="px-5 py-3 border-b border-border flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <h3 className="text-foreground font-semibold text-sm">AI Working</h3>
           </div>
-          <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+          <div className="divide-y divide-border">
             {activeStreams.map(([leadId, stream]) => {
               const meta = AGENT_LABELS[stream.agent] || AGENT_LABELS.strategist;
               const Icon = meta.icon;
@@ -311,7 +311,7 @@ export default function ResearchProgress() {
 
       {/* Live log */}
       <div className="glass-card overflow-hidden mb-6">
-        <div className="px-5 py-3 border-b flex items-center justify-between" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+        <div className="px-5 py-3 border-b border-border flex items-center justify-between">
           <h3 className="text-foreground font-semibold text-sm">Processing Log</h3>
           <span className="text-xs text-muted-foreground">{logEntries.length} events</span>
         </div>

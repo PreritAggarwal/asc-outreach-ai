@@ -199,7 +199,7 @@ export default function SettingsPage() {
             <div className="space-y-3">
               {[
                 { name: "Gmail / SMTP", connected: settings?.apiKeys?.mailer, detail: "Outbound email delivery" },
-                { name: "Gemini", connected: settings?.apiKeys?.gemini, detail: "AI pipeline (qualification, drafting, critique)" },
+                { name: "Claude (Anthropic)", connected: settings?.apiKeys?.claude, detail: "AI pipeline (qualification, drafting, critique)" },
                 { name: "HubSpot", connected: settings?.apiKeys?.hubspot, detail: "CRM sync — contacts and deals" },
                 { name: "Proxycurl", connected: settings?.apiKeys?.proxycurl, detail: "LinkedIn profile enrichment" },
                 { name: "Apollo.io", connected: settings?.apiKeys?.apollo, detail: "Company and contact data" },
